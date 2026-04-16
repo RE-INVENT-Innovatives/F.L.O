@@ -548,7 +548,8 @@ export default function BlogPage() {
 
   if (isEditorOpen) {
     return (
-      <div className="fixed inset-0 pt-24 bg-[#09090b] z-40">
+      <div className="fixed inset-0 pt-24 bg-zinc-950/80 backdrop-blur-xl z-40">
+
         <MarkdownEditor
           value={draft.content}
           onChange={(content) => setDraft((prev) => ({ ...prev, content }))}

@@ -69,8 +69,10 @@ export default function PreviewEditorPage() {
   const editorContent = (
     <div className={cn(
       "h-full w-full flex flex-col md:flex-row rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#1e1e1e] font-sans relative",
-      isFullscreen && "fixed inset-0 w-screen h-screen pt-24 bg-[#0a0a0a] z-40 rounded-none border-none"
+      isFullscreen && "w-full h-full flex flex-col md:flex-row bg-[#0a0a0a] rounded-none border-none"
     )}>
+
+
 
       
       {(!isMobile || activeTab !== 'preview') && (
@@ -264,7 +266,12 @@ export default function PreviewEditorPage() {
 
   // Use createPortal for full screen mode if we are on client
   if (typeof document !== 'undefined' && isFullscreen) {
-    return createPortal(editorContent, document.body);
+    return createPortal(
+      <div className="fixed inset-0 z-40 bg-[#0a0a0a] flex flex-col">
+        {editorContent}
+      </div>,
+      document.body
+    );
   }
 
   return (
