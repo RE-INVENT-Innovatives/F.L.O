@@ -69,8 +69,9 @@ export default function PreviewEditorPage() {
   const editorContent = (
     <div className={cn(
       "h-full w-full flex flex-col md:flex-row rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#1e1e1e] font-sans relative",
-      isFullscreen && "fixed inset-0 w-screen h-screen z-[500] rounded-none border-none"
+      isFullscreen && "fixed inset-0 w-screen h-screen pt-24 bg-[#0a0a0a] z-40 rounded-none border-none"
     )}>
+
       
       {(!isMobile || activeTab !== 'preview') && (
         <EditorSidebar 
@@ -267,8 +268,9 @@ export default function PreviewEditorPage() {
   }
 
   return (
-    <div className="w-full h-screen p-2 md:p-4 lg:p-6 bg-[#0a0a0a]">
+    <div className="w-full h-screen p-2 md:p-4 lg:p-6 pt-24 bg-[#0a0a0a]">
       {editorContent}
     </div>
+
   );
 }

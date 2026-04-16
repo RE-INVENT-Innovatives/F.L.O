@@ -128,8 +128,9 @@ function MarkdownEditor({
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-96px)] bg-[#09090b] text-zinc-300 overflow-hidden relative">
+    <div className="flex flex-col h-full bg-[#09090b] text-zinc-300 overflow-hidden relative">
       {/* Top bar - STICKY to container */}
+
 
       <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#09090b]/80 backdrop-blur-xl shrink-0 z-50">
         <div className="flex items-center gap-6">
@@ -375,8 +376,9 @@ export default function BlogPage() {
       localStorage.setItem('flo_blog_draft_recovery', JSON.stringify(draft));
       
       if (draft.title.trim()) {
-        handleSave();
+        handleSave(true);
       }
+
     }, 3000);
 
     return () => clearTimeout(timer);
@@ -435,7 +437,7 @@ export default function BlogPage() {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (isAutoSave = false) => {
     if (!draft.title.trim()) {
       return;
     }
@@ -451,7 +453,7 @@ export default function BlogPage() {
         });
         setEditingPost(created);
         setIsNewPost(false);
-        addNotification('Post created.', 'success');
+        if (!isAutoSave) addNotification('Post created.', 'success');
       } else if (editingPost) {
         await blogService.update(editingPost.id, {
           title: draft.title,
@@ -461,15 +463,16 @@ export default function BlogPage() {
           status: draft.status,
           coverImageUrl: draft.coverImageUrl,
         });
-        addNotification('Post saved.', 'success');
+        if (!isAutoSave) addNotification('Post saved.', 'success');
       }
       await fetchPosts();
     } catch {
-      addNotification('Failed to save post.', 'error');
+      if (!isAutoSave) addNotification('Failed to save post.', 'error');
     } finally {
       setIsSaving(false);
     }
   };
+
 
   const handleTogglePublish = async (post: BlogPostListItem) => {
     try {
@@ -545,20 +548,23 @@ export default function BlogPage() {
 
   if (isEditorOpen) {
     return (
-      <MarkdownEditor
-        value={draft.content}
-        onChange={(content) => setDraft((prev) => ({ ...prev, content }))}
-        onSave={handleSave}
-        isSaving={isSaving}
-        draft={draft}
-        setDraft={setDraft}
-        onClose={() => setIsEditorOpen(false)}
-        editingPost={editingPost}
-        isUploadingCover={isUploadingCover}
-        onCoverUpload={handleCoverUpload}
-      />
+      <div className="fixed inset-0 pt-24 bg-[#09090b] z-40">
+        <MarkdownEditor
+          value={draft.content}
+          onChange={(content) => setDraft((prev) => ({ ...prev, content }))}
+          onSave={handleSave}
+          isSaving={isSaving}
+          draft={draft}
+          setDraft={setDraft}
+          onClose={() => setIsEditorOpen(false)}
+          editingPost={editingPost}
+          isUploadingCover={isUploadingCover}
+          onCoverUpload={handleCoverUpload}
+        />
+      </div>
     );
   }
+
 
 
 
