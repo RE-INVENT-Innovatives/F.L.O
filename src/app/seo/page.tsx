@@ -712,22 +712,83 @@ export default function SeoPage() {
             )}
           </AnimatePresence>
 
-          {/* Tips */}
-          <div className="p-4 bg-zinc-900/30 border border-white/5 rounded-2xl">
-            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-3">Pro Tips</p>
-            <ul className="space-y-2">
+          {/* Checklist */}
+          <div className="p-5 bg-zinc-900/30 border border-white/5 rounded-2xl overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full" />
+            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-4">SEO Checklist</p>
+            
+            <div className="space-y-3 relative">
               {[
-                'Include your name and role in the title, e.g. "Jane Doe — React Developer"',
-                'Add your specific title to keywords for ATS compatibility',
-                'Use a professional headshot or branded banner as your OG image',
+                { label: 'Title length (50–60)', ok: settings.metaTitle.length >= 50 && settings.metaTitle.length <= 60 },
+                { label: 'Description (120–160)', ok: settings.metaDescription.length >= 120 && settings.metaDescription.length <= 160 },
+                { label: 'Social Share Image', ok: !!settings.ogImageUrl },
+                { label: 'Focus Keywords (3+)', ok: settings.keywords.length >= 3 },
+                { label: 'Twitter Handle Set', ok: !!settings.twitterSite },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <span className={cn("text-[12px] transition-colors", item.ok ? "text-zinc-300" : "text-zinc-500")}>
+                    {item.label}
+                  </span>
+                  {item.ok ? (
+                    <div className="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                      <CheckCircle className="w-2.5 h-2.5 text-emerald-500" />
+                    </div>
+                  ) : (
+                    <div className="w-4 h-4 rounded-full bg-white/5 flex items-center justify-center">
+                      <div className="w-1 h-1 rounded-full bg-zinc-700" />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            {/* Progress bar */}
+            <div className="mt-5 pt-5 border-t border-white/5">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-medium text-zinc-500">Overall Progress</span>
+                <span className="text-[10px] font-bold text-white">
+                  {Math.round(([
+                    settings.metaTitle.length >= 50 && settings.metaTitle.length <= 60,
+                    settings.metaDescription.length >= 120 && settings.metaDescription.length <= 160,
+                    !!settings.ogImageUrl,
+                    settings.keywords.length >= 3,
+                    !!settings.twitterSite
+                  ].filter(Boolean).length / 5) * 100)}%
+                </span>
+              </div>
+              <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                <motion.div 
+                  className="h-full bg-indigo-500"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${([
+                    settings.metaTitle.length >= 50 && settings.metaTitle.length <= 60,
+                    settings.metaDescription.length >= 120 && settings.metaDescription.length <= 160,
+                    !!settings.ogImageUrl,
+                    settings.keywords.length >= 3,
+                    !!settings.twitterSite
+                  ].filter(Boolean).length / 5) * 100}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Tips */}
+          <div className="p-5 bg-zinc-900/30 border border-white/5 rounded-2xl">
+            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-3">Expert Tips</p>
+            <ul className="space-y-2.5">
+              {[
+                'Title: "Jane Doe — Lead UX Architect"',
+                'Add specific skills for ATS compatibility.',
+                'Use a professional headshot for OG Card.',
               ].map((tip, i) => (
                 <li key={i} className="flex items-start gap-2 text-[11px] text-zinc-500 leading-relaxed">
-                  <span className="text-indigo-400 mt-0.5 shrink-0">›</span>
+                  <Sparkles className="w-3 h-3 text-indigo-400 mt-0.5 shrink-0" />
                   {tip}
                 </li>
               ))}
             </ul>
           </div>
+
         </div>
       </div>
     </div>

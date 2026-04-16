@@ -335,6 +335,53 @@ export default function BlogPage() {
     coverImageUrl: null,
   });
 
+  // 1. Load entries on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await blogService.getAll();
+        setPosts(data);
+      } catch (err) {
+        addNotification('Could not load posts.', 'error');
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [addNotification]);
+
+  // 2. Check for local recovery on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('flo_blog_draft_recovery');
+    if (saved && !isEditorOpen) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.content || parsed.title) {
+          addNotification('Unsaved draft recovered.', 'info');
+          setDraft(parsed);
+          setIsEditorOpen(true);
+          localStorage.removeItem('flo_blog_draft_recovery');
+        }
+      } catch (e) {
+        console.error('Failed to parse draft recovery', e);
+      }
+    }
+  }, []);
+
+  // 3. Auto-save Debounce
+  useEffect(() => {
+    if (!isEditorOpen) return;
+
+    const timer = setTimeout(() => {
+      localStorage.setItem('flo_blog_draft_recovery', JSON.stringify(draft));
+      
+      if (draft.title.trim()) {
+        handleSave();
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [draft, isEditorOpen]);
+
   const fetchPosts = async () => {
     setIsLoading(true);
     try {
@@ -346,8 +393,6 @@ export default function BlogPage() {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => { fetchPosts(); }, []);
 
   const filteredPosts = useMemo(() => {
     let result = [...posts];
@@ -392,7 +437,6 @@ export default function BlogPage() {
 
   const handleSave = async () => {
     if (!draft.title.trim()) {
-      addNotification('Title is required.', 'error');
       return;
     }
     setIsSaving(true);
@@ -442,16 +486,26 @@ export default function BlogPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (postId: string) => {
+    setPostToDelete(postId);
+    setIsDeleting(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!postToDelete) return;
+    setIsLoading(true);
     try {
-      await blogService.delete(id);
-      setPosts((prev) => prev.filter((p) => p.id !== id));
-      if (editingPost?.id === id) setIsEditorOpen(false);
+      await blogService.delete(postToDelete);
+      setPosts((prev) => prev.filter((p) => p.id !== postToDelete));
+      if (editingPost?.id === postToDelete) setIsEditorOpen(false);
       addNotification('Post deleted.', 'success');
     } catch {
-      addNotification('Failed to delete.', 'error');
+      addNotification('Delete failed.', 'error');
+    } finally {
+      setIsLoading(false);
+      setIsDeleting(false);
+      setPostToDelete(null);
     }
-    setShowDeleteConfirm(null);
   };
 
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -583,15 +637,31 @@ export default function BlogPage() {
           <Loader2 className="w-5 h-5 animate-spin text-zinc-600" />
         </div>
       ) : filteredPosts.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-48 gap-4 border border-dashed border-white/6 rounded-2xl">
-          <FileText className="w-6 h-6 text-zinc-700" />
-          <p className="text-sm text-zinc-500">
-            {search
-              ? 'No posts match your search.'
-              : statusFilter !== 'all'
-              ? `No ${statusFilter} posts.`
-              : 'No posts yet.'}
-          </p>
+        <div className="flex flex-col items-center justify-center py-20 px-6 gap-6 bg-zinc-900/20 border border-dashed border-white/8 rounded-[32px] text-center overflow-hidden relative">
+          {/* Decorative background element */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
+          
+          <div className="relative w-48 h-48 mb-2">
+            <img 
+              src="/empty-blog.png" 
+              alt="No posts"
+              id="empty-blog-illustration"
+              className="w-full h-full object-contain opacity-80"
+            />
+          </div>
+
+
+          <div className="max-w-xs space-y-2">
+            <h3 className="text-lg font-semibold text-white">Your ideas deserve space.</h3>
+            <p className="text-sm text-zinc-500">
+              {search
+                ? "We couldn't find any posts matching your search."
+                : statusFilter !== 'all'
+                ? `You don't have any ${statusFilter} posts yet.`
+                : 'Start writing your first story and share your expertise with the world.'}
+            </p>
+          </div>
+
           {!search && statusFilter === 'all' && (
             <button
               onClick={openNewPost}
