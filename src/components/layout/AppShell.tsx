@@ -14,6 +14,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const githubUser = useStore((state) => state.githubUser);
   const isAuthenticated = useStore((state) => state.isAuthenticated);
+  const isEditingBlog = useStore((state) => state.isEditingBlog);
 
   const fetchInitialData = useStore((state) => state.fetchInitialData);
   const setIsAuthenticated = useStore((state) => state.setIsAuthenticated);
@@ -79,8 +80,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const isEditingBlog = useStore((state) => state.isEditingBlog);
-  const isFullWidthPage = isPublicPortfolio || ['preview', 'templates'].some(p => pathname?.includes(p)) || isEditingBlog;
+  const isFullWidthPage = isPublicPortfolio || ['preview', 'templates', 'subscription'].some(p => pathname?.includes(p)) || isEditingBlog;
+
+
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-50 font-sans overflow-x-hidden selection:bg-indigo-500/30">

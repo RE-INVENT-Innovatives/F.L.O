@@ -63,15 +63,46 @@ export default function ProfilePage() {
         >
           Profile Settings
         </motion.h1>
-        <motion.p 
-          className="text-zinc-400 text-lg"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+        <motion.div 
+          className="flex items-center justify-center gap-2 mb-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          Customize the personal details shown on your portfolio.
-        </motion.p>
+          <span className="text-zinc-500 text-sm">Account Type:</span>
+          <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-widest">
+            Pro Developer
+          </span>
+        </motion.div>
       </header>
+
+      {/* Subscription Card */}
+      <motion.div 
+        className="relative group overflow-hidden bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent border border-white/10 rounded-3xl p-6 backdrop-blur-md"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25 }}
+      >
+        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full" />
+        <div className="relative flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-indigo-400" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-white">Pro Plan Active</p>
+              <p className="text-xs text-zinc-500">Your premium features expire on Oct 12, 2025.</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => window.location.href = '/subscription'}
+            className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold rounded-xl transition-all"
+          >
+            Manage Plan
+          </button>
+        </div>
+      </motion.div>
+
 
       <motion.div 
         className="bg-zinc-900/30 border border-white/5 rounded-3xl p-8 backdrop-blur-sm"

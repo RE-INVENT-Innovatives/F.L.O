@@ -77,6 +77,13 @@ export function TopNav() {
             >
               Portfolio Settings
             </button>
+            <button 
+              onClick={() => { setIsOpen(false); router.push('/subscription'); }}
+              className="w-full text-left px-4 py-2.5 text-xs text-zinc-300 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-between group"
+            >
+              Billing & Plans
+            </button>
+
             
             <div className="h-px bg-white/5 my-1" />
             
