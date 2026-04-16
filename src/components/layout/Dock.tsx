@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, SlidersHorizontal, MonitorPlay, LayoutTemplate, Inbox, TrendingUp, BookOpen, CreditCard } from 'lucide-react';
+import { LayoutDashboard, SlidersHorizontal, MonitorPlay, LayoutTemplate, Inbox, TrendingUp, BookOpen } from 'lucide-react';
+
 
 import { cn } from '@/lib/utils';
 import { useStore } from '@/store/useStore';
@@ -16,8 +17,8 @@ const navItems = [
   { path: '/preview', label: 'Preview & Editor', icon: MonitorPlay },
   { path: '/seo', label: 'SEO & OG', icon: TrendingUp },
   { path: '/blog', label: 'Blog', icon: BookOpen },
-  { path: '/subscription', label: 'Subscription', icon: CreditCard },
 ];
+
 
 
 export function Dock() {
