@@ -1,4 +1,4 @@
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api').replace(/\/$/, '');
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://f-l-o-backend.vercel.app/api').replace(/\/$/, '');
 export const BACKEND_URL = BASE_URL.includes('/api') ? BASE_URL.split('/api')[0] : BASE_URL;
 
 export const getAssetUrl = (url: string | null) => {
