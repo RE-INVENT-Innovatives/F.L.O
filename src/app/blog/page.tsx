@@ -490,24 +490,17 @@ export default function BlogPage() {
   };
 
   const handleDelete = async (postId: string) => {
-    setPostToDelete(postId);
-    setIsDeleting(true);
-  };
-
-  const confirmDelete = async () => {
-    if (!postToDelete) return;
     setIsLoading(true);
     try {
-      await blogService.delete(postToDelete);
-      setPosts((prev) => prev.filter((p) => p.id !== postToDelete));
-      if (editingPost?.id === postToDelete) setIsEditorOpen(false);
+      await blogService.delete(postId);
+      setPosts((prev) => prev.filter((p) => p.id !== postId));
+      if (editingPost?.id === postId) setIsEditorOpen(false);
       addNotification('Post deleted.', 'success');
     } catch {
       addNotification('Delete failed.', 'error');
     } finally {
       setIsLoading(false);
-      setIsDeleting(false);
-      setPostToDelete(null);
+      setShowDeleteConfirm(null);
     }
   };
 

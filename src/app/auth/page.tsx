@@ -43,7 +43,6 @@ export default function AuthPage() {
         throw new Error('Login succeeded but no access token was returned. Please try again.');
       }
 
-      console.log('[Auth] Token saved successfully, starting loader animation...');
       toast.success(isLogin ? 'Welcome back!' : 'Account created successfully!');
 
       // Pre-fetch initial data to see if user has already connected github

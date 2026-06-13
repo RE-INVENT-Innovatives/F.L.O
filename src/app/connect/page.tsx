@@ -41,7 +41,6 @@ export default function ConnectGithubPage() {
     setError('');
 
     try {
-      console.log('[Connect] Calling /github/connect...');
       await githubService.connectAccount(username);
 
       let profile: any;

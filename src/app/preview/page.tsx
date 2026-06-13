@@ -18,6 +18,7 @@ import { useToast } from '@/components/ui/Toast';
 import { EditorSidebar } from '@/components/features/editor/EditorSidebar';
 import { BrowserChrome } from '@/components/features/editor/BrowserChrome';
 import { PreviewFrame } from '@/components/features/editor/PreviewFrame';
+import { Modal } from '@/components/ui/Modal';
 
 export type EditorTab = 'editor' | 'templates' | 'preview';
 
@@ -159,82 +160,68 @@ export default function PreviewEditorPage() {
       )}
 
       {/* Modals & Overlays */}
-      <AnimatePresence>
-        {showExportModal && (
-          <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-md bg-[#1e1e1e] border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
-            >
-              <div className="p-6 space-y-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-white">Publish Portfolio</h3>
-                  <button onClick={() => setShowExportModal(false)} className="text-zinc-500 hover:text-white">
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl space-y-3">
-                    <div className="flex items-center gap-2 text-indigo-400">
-                      <Github className="w-5 h-5" />
-                      <span className="font-bold text-sm uppercase tracking-wider">GitHub Pages</span>
-                    </div>
-                    <p className="text-xs text-indigo-300/70 leading-relaxed">
-                      We'll create a new repository and deploy your portfolio instantly.
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs text-zinc-400 ml-1">Repository Name</label>
-                    <input 
-                      type="text" 
-                      value={repoName}
-                      onChange={(e) => setRepoName(e.target.value)}
-                      className="w-full bg-[#2a2a2a] border border-white/5 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs text-zinc-400 ml-1">Custom Domain (Optional)</label>
-                    <input 
-                      type="text" 
-                      placeholder="portfolio.yourname.com"
-                      value={customDomain}
-                      onChange={(e) => setCustomDomain(e.target.value)}
-                      className="w-full bg-[#2a2a2a] border border-white/5 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50"
-                    />
-                  </div>
-                </div>
-
-                <button 
-                  disabled={isDeploying}
-                  onClick={async () => {
-                    setIsDeploying(true);
-                    try {
-                      const res = await deployService.deployToGitHubPages(repoName, customDomain);
-                      setDeployedUrl(res.deployedUrl || null);
-                      setShowExportModal(false);
-                      setShowShareToast(true);
-                      setTimeout(() => setShowShareToast(false), 8000);
-                    } catch (error: any) {
-                      toast.error(error.message || 'Deployment failed. Please try again.');
-                    } finally {
-                      setIsDeploying(false);
-                    }
-                  }}
-                  className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  {isDeploying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} 
-                  {isDeploying ? 'Deploying...' : 'Deploy to GitHub'}
-                </button>
-              </div>
-            </motion.div>
+      <Modal 
+        isOpen={showExportModal} 
+        onClose={() => setShowExportModal(false)} 
+        title="Publish Portfolio"
+      >
+        <div className="space-y-4">
+          <div className="p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl space-y-3">
+            <div className="flex items-center gap-2 text-indigo-400">
+              <Github className="w-5 h-5" />
+              <span className="font-bold text-sm uppercase tracking-wider">GitHub Pages</span>
+            </div>
+            <p className="text-xs text-indigo-300/70 leading-relaxed">
+              We'll create a new repository and deploy your portfolio instantly.
+            </p>
           </div>
-        )}
 
+          <div className="space-y-2">
+            <label className="text-xs text-zinc-400 ml-1 font-semibold uppercase tracking-wider">Repository Name</label>
+            <input 
+              type="text" 
+              value={repoName}
+              onChange={(e) => setRepoName(e.target.value)}
+              className="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 transition-all"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs text-zinc-400 ml-1 font-semibold uppercase tracking-wider">Custom Domain (Optional)</label>
+            <input 
+              type="text" 
+              placeholder="portfolio.yourname.com"
+              value={customDomain}
+              onChange={(e) => setCustomDomain(e.target.value)}
+              className="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 transition-all"
+            />
+          </div>
+        </div>
+
+        <button 
+          disabled={isDeploying}
+          onClick={async () => {
+            setIsDeploying(true);
+            try {
+              const res = await deployService.deployToGitHubPages(repoName, customDomain);
+              setDeployedUrl(res.deployedUrl || null);
+              setShowExportModal(false);
+              setShowShareToast(true);
+              setTimeout(() => setShowShareToast(false), 8000);
+            } catch (error: any) {
+              toast.error(error.message || 'Deployment failed. Please try again.');
+            } finally {
+              setIsDeploying(false);
+            }
+          }}
+          className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          {isDeploying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} 
+          {isDeploying ? 'Deploying...' : 'Deploy to GitHub'}
+        </button>
+      </Modal>
+
+      <AnimatePresence>
         {showShareToast && (
           <motion.div 
             initial={{ opacity: 0, y: 50 }}

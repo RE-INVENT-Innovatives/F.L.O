@@ -67,10 +67,7 @@ class ApiClient {
       headers.set('Content-Type', 'application/json');
     }
 
-    console.log(`[ApiClient] ${options.method || 'GET'} ${url}`, {
-      headers: Object.fromEntries(headers.entries()),
-      body: options.body
-    });
+
 
     const response = await fetch(url, {
       ...options,

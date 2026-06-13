@@ -29,11 +29,11 @@ export function useToast() {
         toast.warning(message, { theme: 'dark', ...options }),
       promise: (promise: Promise<any>, messages: { loading: string; success: string; error: string }, options?: ToastOptions) =>
         toast.promise(promise, {
-          loading: messages.loading,
-          success: messages.success,
-          error: messages.error,
-          theme: 'dark',
-          ...options
+          loadingMessage: messages.loading,
+          successMessage: messages.success,
+          errorMessage: messages.error,
+          theme: options?.theme || 'dark',
+          closeButton: options?.closeButton,
         }),
     },
   };

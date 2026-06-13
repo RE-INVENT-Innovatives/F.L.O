@@ -4,6 +4,7 @@ import React from 'react';
 import { useStore } from '@/store/useStore';
 import { Bell, ChevronDown } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'motion/react';
 
 export function TopNav() {
   const githubUser = useStore((state) => state.githubUser);
@@ -58,47 +59,55 @@ export function TopNav() {
           <ChevronDown className={`w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-300 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
         </div>
 
-        {isOpen && (
-          <div className="absolute right-0 mt-3 w-56 rounded-xl bg-[#18181b]/95 backdrop-blur-xl border border-white/10 shadow-2xl py-2 flex flex-col z-[101] overflow-hidden">
-            <div className="px-4 py-3 border-b border-white/5 mb-1">
-              <p className="text-sm font-medium text-white">{githubUser?.name || githubUser?.login}</p>
-              <p className="text-xs text-zinc-400 truncate mt-0.5">{githubUser?.email || 'No email provided'}</p>
-            </div>
-            
-            <button 
-              onClick={() => { setIsOpen(false); router.push('/connect'); }}
-              className="w-full text-left px-4 py-2.5 text-xs text-zinc-300 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-between group"
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div 
+              initial={{ opacity: 0, y: 8, scale: 0.95, filter: 'blur(4px)' }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: 4, scale: 0.95, filter: 'blur(4px)' }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute right-0 mt-3 w-56 rounded-xl bg-[#18181b]/95 backdrop-blur-xl border border-white/10 shadow-2xl py-2 flex flex-col z-[101] overflow-hidden"
             >
-              Change GitHub Account
-            </button>
-            <button 
-              onClick={() => { setIsOpen(false); router.push('/profile'); }}
-              className="w-full text-left px-4 py-2.5 text-xs text-zinc-300 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-between group"
-            >
-              Portfolio Settings
-            </button>
-            <button 
-              onClick={() => { setIsOpen(false); router.push('/subscription'); }}
-              className="w-full text-left px-4 py-2.5 text-xs text-zinc-300 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-between group"
-            >
-              Billing & Plans
-            </button>
+              <div className="px-4 py-3 border-b border-white/5 mb-1">
+                <p className="text-sm font-medium text-white">{githubUser?.name || githubUser?.login}</p>
+                <p className="text-xs text-zinc-400 truncate mt-0.5">{githubUser?.email || 'No email provided'}</p>
+              </div>
+              
+              <button 
+                onClick={() => { setIsOpen(false); router.push('/connect'); }}
+                className="w-full text-left px-4 py-2.5 text-xs text-zinc-300 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-between group"
+              >
+                Change GitHub Account
+              </button>
+              <button 
+                onClick={() => { setIsOpen(false); router.push('/profile'); }}
+                className="w-full text-left px-4 py-2.5 text-xs text-zinc-300 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-between group"
+              >
+                Portfolio Settings
+              </button>
+              <button 
+                onClick={() => { setIsOpen(false); router.push('/subscription'); }}
+                className="w-full text-left px-4 py-2.5 text-xs text-zinc-300 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-between group"
+              >
+                Billing & Plans
+              </button>
 
-            
-            <div className="h-px bg-white/5 my-1" />
-            
-            <button 
-              onClick={() => { 
-                setIsOpen(false); 
-                logout(); 
-                router.push('/auth'); 
-              }}
-              className="w-full text-left px-4 py-2.5 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors flex items-center justify-between group"
-            >
-              Sign Out
-            </button>
-          </div>
-        )}
+              
+              <div className="h-px bg-white/5 my-1" />
+              
+              <button 
+                onClick={() => { 
+                  setIsOpen(false); 
+                  logout(); 
+                  router.push('/auth'); 
+                }}
+                className="w-full text-left px-4 py-2.5 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors flex items-center justify-between group"
+              >
+                Sign Out
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
