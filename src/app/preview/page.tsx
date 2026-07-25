@@ -14,11 +14,20 @@ import { TEMPLATES } from '@/lib/templates';
 import { deployService } from '@/services/deploy.service';
 import { useToast } from '@/components/ui/Toast';
 
+import dynamic from 'next/dynamic';
+
 // Components
-import { EditorSidebar } from '@/components/features/editor/EditorSidebar';
+const EditorSidebar = dynamic(() => import('@/components/features/editor/EditorSidebar').then(mod => mod.EditorSidebar), {
+  loading: () => <div className="w-[320px] h-full bg-[#1e1e1e] border-r border-white/10 shrink-0 flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-zinc-700" /></div>,
+  ssr: false
+});
 import { BrowserChrome } from '@/components/features/editor/BrowserChrome';
-import { PreviewFrame } from '@/components/features/editor/PreviewFrame';
+const PreviewFrame = dynamic(() => import('@/components/features/editor/PreviewFrame').then(mod => mod.PreviewFrame), {
+  loading: () => <div className="flex-1 h-full bg-[#0a0a0a] flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-zinc-700" /></div>,
+  ssr: false
+});
 import { Modal } from '@/components/ui/Modal';
+import { Notch } from '@/components/ui/notch';
 
 export type EditorTab = 'editor' | 'templates' | 'preview';
 
@@ -69,79 +78,49 @@ export default function PreviewEditorPage() {
 
   const editorContent = (
     <div className={cn(
-      "h-full w-full flex flex-col md:flex-row rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#1e1e1e] font-sans relative",
-      isFullscreen && "w-full h-full flex flex-col md:flex-row bg-[#0a0a0a] rounded-none border-none"
+      "h-full w-full flex flex-col rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#1e1e1e] font-sans relative",
+      isFullscreen && "w-full h-full bg-[#0a0a0a] rounded-none border-none"
     )}>
 
 
+      {/* Row containing Sidebar and/or Preview */}
+      <div className="flex-1 flex flex-col md:flex-row min-h-0 relative">
+        {(!isMobile || activeTab !== 'preview') && (
+          <EditorSidebar 
+            activeTab={activeTab as any}
+            setActiveTab={setActiveTab as any}
+            isCollapsed={isEditorCollapsed}
+            isFullscreen={isFullscreen}
+            templateSearch={templateSearch}
+            setTemplateSearch={setTemplateSearch}
+            templates={[...templates]}
+            activeTemplateId={activeTemplateId}
+            onTemplateSelect={handleTemplateSelect}
+            customData={customData}
+            updateCustomData={updateCustomData}
+            chatInput={chatInput}
+            setChatInput={setChatInput}
+          />
+        )}
 
-      
-      {(!isMobile || activeTab !== 'preview') && (
-        <EditorSidebar 
-          activeTab={activeTab as any}
-          setActiveTab={setActiveTab as any}
-          isCollapsed={isEditorCollapsed}
-          isFullscreen={isFullscreen}
-          templateSearch={templateSearch}
-          setTemplateSearch={setTemplateSearch}
-          templates={[...templates]}
-          activeTemplateId={activeTemplateId}
-          onTemplateSelect={handleTemplateSelect}
-          customData={customData}
-          updateCustomData={updateCustomData}
-          chatInput={chatInput}
-          setChatInput={setChatInput}
-        />
-      )}
+        {/* Collapse Toggle Button (Desktop Only) */}
+        {!isFullscreen && !isMobile && (
+          <motion.button
+            animate={{ left: isEditorCollapsed ? 0 : 320 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            onClick={() => setIsEditorCollapsed(!isEditorCollapsed)}
+            className={cn(
+              "absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-50 w-6 h-12 bg-[#2a2a2a] border border-white/10 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-300 shadow-xl",
+              isEditorCollapsed && "translate-x-0 rounded-l-none"
+            )}
+          >
+            {isEditorCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          </motion.button>
+        )}
 
-      {/* Collapse Toggle Button (Desktop Only) */}
-      {!isFullscreen && !isMobile && (
-        <motion.button
-          animate={{ left: isEditorCollapsed ? 0 : 320 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          onClick={() => setIsEditorCollapsed(!isEditorCollapsed)}
-          className={cn(
-            "absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-50 w-6 h-12 bg-[#2a2a2a] border border-white/10 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-300 shadow-xl",
-            isEditorCollapsed && "translate-x-0 rounded-l-none"
-          )}
-        >
-          {isEditorCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-        </motion.button>
-      )}
-
-      {/* Right Main Area (Preview Container) */}
-      {(!isMobile || activeTab === 'preview') && (
-        <div className="flex-1 flex flex-col bg-[#0a0a0a] min-w-0 relative">
-          {/* Mobile Preview Tab Switcher (Only if in preview tab) */}
-          {isMobile && (
-             <div className="flex p-1 bg-[#141414] border-b border-white/5 w-full">
-               <div className="flex p-0.5 bg-black/40 border border-white/5 rounded-full overflow-hidden w-full relative">
-                 {[
-                   { id: 'editor', label: 'Editor' },
-                   { id: 'templates', label: 'Templates' },
-                   { id: 'preview', label: 'Preview' }
-                 ].map((tab) => (
-                   <button
-                     key={tab.id}
-                     onClick={() => setActiveTab(tab.id as any)}
-                     className={cn(
-                       "relative flex-1 py-1.5 text-[10px] font-bold rounded-full transition-all duration-300", 
-                       activeTab === tab.id ? "text-white" : "text-zinc-500 hover:text-zinc-300"
-                     )}
-                   >
-                     {activeTab === tab.id && (
-                       <motion.div
-                         layoutId="sidebarActiveTab"
-                         className="absolute inset-0 bg-[#333] rounded-full shadow-inner"
-                         transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
-                       />
-                     )}
-                     <span className="relative z-10">{tab.label}</span>
-                   </button>
-                 ))}
-               </div>
-             </div>
-          )}
+        {/* Right Main Area (Preview Container) */}
+        {(!isMobile || activeTab === 'preview') && (
+          <div className="flex-1 flex flex-col bg-[#0a0a0a] min-w-0 relative">
 
           <BrowserChrome 
             isFullscreen={isFullscreen}
@@ -157,7 +136,8 @@ export default function PreviewEditorPage() {
             githubUser={githubUser}
           />
         </div>
-      )}
+        )}
+      </div>
 
       {/* Modals & Overlays */}
       <Modal 
@@ -264,7 +244,24 @@ export default function PreviewEditorPage() {
   return (
     <div className="w-full h-screen p-2 md:p-4 lg:p-6 pt-24 bg-[#0a0a0a]">
       {editorContent}
+      {isMobile && !isFullscreen && (
+        <Notch 
+          items={[
+            {
+              id: "tabs",
+              label: "View",
+              value: activeTab,
+              onChange: (id) => setActiveTab(id as any),
+              options: [
+                { id: "editor", label: "Editor" },
+                { id: "templates", label: "Templates" },
+                { id: "preview", label: "Preview" }
+              ]
+            }
+          ]}
+          position="bottom"
+        />
+      )}
     </div>
-
   );
 }

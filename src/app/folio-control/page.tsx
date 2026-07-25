@@ -16,16 +16,19 @@ import { getAssetUrl } from '@/lib/api-client';
 import { Education, Experience } from '@/services/profile.service';
 
 
+import dynamic from 'next/dynamic';
+import { useWindowSize } from '@/hooks/useWindowSize';
+import { Notch, NotchItem } from '@/components/ui/notch';
 import { RepoCard } from '@/components/features/dashboard/RepoCard';
 import { SkillBadge } from '@/components/features/dashboard/SkillBadge';
 import { Modal } from '@/components/ui/Modal';
 import { Dropdown } from '@/components/ui/Dropdown';
-import { EducationForm } from '@/components/features/folio/EducationForm';
-import { ExperienceForm } from '@/components/features/folio/ExperienceForm';
-import { TestimonialForm } from '@/components/features/folio/TestimonialForm';
-import { ProfileEditForm } from '@/components/features/folio/ProfileEditForm';
+const EducationForm = dynamic(() => import('@/components/features/folio/EducationForm').then(mod => mod.EducationForm), { ssr: false });
+const ExperienceForm = dynamic(() => import('@/components/features/folio/ExperienceForm').then(mod => mod.ExperienceForm), { ssr: false });
+const TestimonialForm = dynamic(() => import('@/components/features/folio/TestimonialForm').then(mod => mod.TestimonialForm), { ssr: false });
+const ProfileEditForm = dynamic(() => import('@/components/features/folio/ProfileEditForm').then(mod => mod.ProfileEditForm), { ssr: false });
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
-import { SuccessModal } from '@/components/features/folio/SuccessModal';
+const SuccessModal = dynamic(() => import('@/components/features/folio/SuccessModal').then(mod => mod.SuccessModal), { ssr: false });
 import { Testimonial } from '@/services/testimonials.service';
 
 
@@ -68,6 +71,9 @@ export default function FolioControlPage() {
   const [newSkill, setNewSkill] = useState('');
   const [sortBy, setSortBy] = useState<'stars' | 'name' | 'updated-desc'>('stars');
   const [filterLang, setFilterLang] = useState<string>('All');
+  
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
   const [skillToDelete, setSkillToDelete] = useState<string | null>(null);
   const [expToDelete, setExpToDelete] = useState<string | null>(null);
   const [eduToDelete, setEduToDelete] = useState<string | null>(null);
@@ -225,7 +231,7 @@ export default function FolioControlPage() {
       </div>
 
       {/* ── Tab Navigation ── */}
-      <div className="flex items-center gap-0.5 bg-zinc-900/60 border border-white/5 rounded-xl p-1 w-fit">
+      <div className="hidden sm:flex items-center gap-0.5 bg-zinc-900/60 border border-white/5 rounded-xl p-1 w-full sm:w-fit overflow-x-auto no-scrollbar scrollbar-none shrink-0">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -416,7 +422,7 @@ export default function FolioControlPage() {
                             </p>
                           )}
                         </div>
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                        <div className="flex gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                           <button
                             onClick={() => { setEditingExp(exp); setShowExpModal(true); }}
                             className="p-1.5 rounded-lg text-zinc-600 hover:text-white hover:bg-white/5 transition-all"
@@ -476,7 +482,7 @@ export default function FolioControlPage() {
                             {edu.endDate && ` — ${new Date(edu.endDate).getFullYear()}`}
                           </p>
                         </div>
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                        <div className="flex gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                           <button
                             onClick={() => { setEditingEdu(edu); setShowEduModal(true); }}
                             className="p-1.5 rounded-lg text-zinc-600 hover:text-white hover:bg-white/5 transition-all"
@@ -590,7 +596,7 @@ export default function FolioControlPage() {
                           </div>
                         </div>
 
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity">
                           {!t.isApproved && (
                             <button
                               onClick={async () => {
@@ -696,7 +702,7 @@ export default function FolioControlPage() {
                         <p className="text-[11px] text-zinc-500 truncate flex-1 mr-1">{asset.name}</p>
                         <button
                           onClick={() => setAssetToDelete(asset.id)}
-                          className="p-1 rounded-md text-zinc-700 hover:text-red-400 hover:bg-red-500/8 transition-all opacity-0 group-hover:opacity-100 shrink-0"
+                          className="p-1 rounded-md text-zinc-700 hover:text-red-400 hover:bg-red-500/8 transition-all md:opacity-0 group-hover:opacity-100 shrink-0"
                           title="Delete"
                         >
                           <Trash2 className="w-3 h-3" />
@@ -880,6 +886,21 @@ export default function FolioControlPage() {
           />
         )}
       </AnimatePresence>
+      {/* Notch Navigation (Mobile Only) */}
+      {isMobile && (
+        <Notch 
+          items={[
+            {
+              id: "tabs",
+              label: "Menu",
+              value: activeTab,
+              onChange: (id) => setActiveTab(id as any),
+              options: TABS.map(t => ({ id: t.id, label: t.label }))
+            }
+          ]}
+          position="bottom"
+        />
+      )}
     </div>
   );
 }

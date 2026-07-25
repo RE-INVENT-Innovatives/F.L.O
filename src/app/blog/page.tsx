@@ -568,7 +568,7 @@ export default function BlogPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-row items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-white">Blog & Case Studies</h1>
           <p className="text-xs text-zinc-500 mt-0.5">
@@ -579,7 +579,7 @@ export default function BlogPage() {
         </div>
         <button
           onClick={openNewPost}
-          className="self-start sm:self-auto flex items-center gap-2 px-6 py-2.5 bg-white text-zinc-950 rounded-xl text-[13px] font-semibold hover:bg-zinc-100 transition-colors shadow-sm"
+          className="flex items-center gap-2 px-4 sm:px-6 py-2.5 bg-white text-zinc-950 rounded-xl text-[13px] font-semibold hover:bg-zinc-100 transition-colors shadow-sm shrink-0"
         >
           New Post
         </button>

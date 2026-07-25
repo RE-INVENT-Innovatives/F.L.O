@@ -12,6 +12,8 @@ import { cn } from '@/lib/utils';
 import { seoService, SeoSettings, SeoScore } from '@/services/seo.service';
 import { useStore } from '@/store/useStore';
 import { getAssetUrl } from '@/lib/api-client';
+import { useWindowSize } from '@/hooks/useWindowSize';
+import { Notch } from '@/components/ui/notch';
 
 
 const TITLE_MAX = 60;
@@ -136,6 +138,8 @@ export default function SeoPage() {
   const [keywordInput, setKeywordInput] = useState('');
   const [previewMode, setPreviewMode] = useState<'google' | 'twitter' | 'og'>('google');
   const [activeTab, setActiveTab] = useState<'basic' | 'social' | 'advanced'>('basic');
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
 
   useEffect(() => {
     (async () => {
@@ -359,7 +363,7 @@ export default function SeoPage() {
         {/* Left: Editor */}
         <div className="space-y-4">
           {/* Tab switcher */}
-          <div className="flex gap-0.5 bg-zinc-900/60 border border-white/5 rounded-xl p-1 w-fit">
+          <div className="hidden sm:flex gap-0.5 bg-zinc-900/60 border border-white/5 rounded-xl p-1 w-full sm:w-fit overflow-x-auto no-scrollbar scrollbar-none shrink-0">
             {tabs.map((t) => (
               <button
                 key={t.id}
@@ -462,7 +466,7 @@ export default function SeoPage() {
                 {/* OG Image */}
                 <SectionCard>
                   <Label hint="Recommended 1200×630px">Social Share Image</Label>
-                  <div className="flex gap-4 items-start">
+                  <div className="flex flex-col sm:flex-row gap-4 items-start">
                     <div className="w-28 h-16 shrink-0 bg-zinc-950/80 border border-white/6 rounded-xl overflow-hidden flex items-center justify-center">
                       {settings.ogImageUrl ? (
                         <img src={getAssetUrl(settings.ogImageUrl)} alt="OG" className="w-full h-full object-cover" />
@@ -791,6 +795,21 @@ export default function SeoPage() {
 
         </div>
       </div>
+      {/* Notch Navigation (Mobile Only) */}
+      {isMobile && (
+        <Notch 
+          items={[
+            {
+              id: "tabs",
+              label: "Menu",
+              value: activeTab,
+              onChange: (id) => setActiveTab(id as any),
+              options: tabs.map(t => ({ id: t.id, label: t.label }))
+            }
+          ]}
+          position="bottom"
+        />
+      )}
     </div>
   );
 }
