@@ -13,7 +13,7 @@ import { seoService, SeoSettings, SeoScore } from '@/services/seo.service';
 import { useStore } from '@/store/useStore';
 import { getAssetUrl } from '@/lib/api-client';
 import { useWindowSize } from '@/hooks/useWindowSize';
-import { Notch } from '@/components/ui/notch';
+import { useNotchTabStore } from '@/store/notchTabStore';
 
 
 const TITLE_MAX = 60;
@@ -137,7 +137,10 @@ export default function SeoPage() {
   const [isDirty, setIsDirty] = useState(false);
   const [keywordInput, setKeywordInput] = useState('');
   const [previewMode, setPreviewMode] = useState<'google' | 'twitter' | 'og'>('google');
-  const [activeTab, setActiveTab] = useState<'basic' | 'social' | 'advanced'>('basic');
+  const { activeTab: _activeTab, setActiveTab } = useNotchTabStore();
+  const activeTab = (_activeTab as 'basic' | 'social' | 'advanced') || 'basic';
+  // Initialize default tab for this page
+  React.useEffect(() => { if (!_activeTab || !['basic','social','advanced'].includes(_activeTab)) setActiveTab('basic'); }, []);
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
@@ -792,24 +795,8 @@ export default function SeoPage() {
               ))}
             </ul>
           </div>
-
         </div>
       </div>
-      {/* Notch Navigation (Mobile Only) */}
-      {isMobile && (
-        <Notch 
-          items={[
-            {
-              id: "tabs",
-              label: "Menu",
-              value: activeTab,
-              onChange: (id) => setActiveTab(id as any),
-              options: tabs.map(t => ({ id: t.id, label: t.label }))
-            }
-          ]}
-          position="bottom"
-        />
-      )}
     </div>
   );
 }

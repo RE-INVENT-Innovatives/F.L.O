@@ -27,13 +27,16 @@ const PreviewFrame = dynamic(() => import('@/components/features/editor/PreviewF
   ssr: false
 });
 import { Modal } from '@/components/ui/Modal';
-import { Notch } from '@/components/ui/notch';
+import { useNotchTabStore } from '@/store/notchTabStore';
 
 export type EditorTab = 'editor' | 'templates' | 'preview';
 
 export default function PreviewEditorPage() {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<EditorTab>('editor');
+  const { activeTab, setActiveTab } = useNotchTabStore();
+  // Initialize default tab for this page
+  React.useEffect(() => { if (!activeTab) setActiveTab('editor'); }, []);
+  const _activeTab = (activeTab as EditorTab) || 'editor';
   const [deviceMode, setDeviceMode] = useState<'desktop' | 'mobile'>('desktop');
   const [chatInput, setChatInput] = useState('');
   const [templateSearch, setTemplateSearch] = useState('');
@@ -85,9 +88,9 @@ export default function PreviewEditorPage() {
 
       {/* Row containing Sidebar and/or Preview */}
       <div className="flex-1 flex flex-col md:flex-row min-h-0 relative">
-        {(!isMobile || activeTab !== 'preview') && (
+        {(!isMobile || _activeTab !== 'preview') && (
           <EditorSidebar 
-            activeTab={activeTab as any}
+            activeTab={_activeTab as any}
             setActiveTab={setActiveTab as any}
             isCollapsed={isEditorCollapsed}
             isFullscreen={isFullscreen}
@@ -119,7 +122,7 @@ export default function PreviewEditorPage() {
         )}
 
         {/* Right Main Area (Preview Container) */}
-        {(!isMobile || activeTab === 'preview') && (
+        {(!isMobile || _activeTab === 'preview') && (
           <div className="flex-1 flex flex-col bg-[#0a0a0a] min-w-0 relative">
 
           <BrowserChrome 
@@ -244,24 +247,6 @@ export default function PreviewEditorPage() {
   return (
     <div className="w-full h-screen p-2 md:p-4 lg:p-6 pt-24 bg-[#0a0a0a]">
       {editorContent}
-      {isMobile && !isFullscreen && (
-        <Notch 
-          items={[
-            {
-              id: "tabs",
-              label: "View",
-              value: activeTab,
-              onChange: (id) => setActiveTab(id as any),
-              options: [
-                { id: "editor", label: "Editor" },
-                { id: "templates", label: "Templates" },
-                { id: "preview", label: "Preview" }
-              ]
-            }
-          ]}
-          position="bottom"
-        />
-      )}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { TopNav } from '@/components/layout/TopNav';
 import { Dock } from '@/components/layout/Dock';
+import { MobileNotch } from '@/components/layout/MobileNotch';
 import { useStore } from '@/store/useStore';
 import { apiClient } from '@/lib/api-client';
 import { cn } from '@/lib/utils';
@@ -111,6 +112,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
 
       {!isAuthPage && githubUser && <Dock />}
+      {!isAuthPage && githubUser && <MobileNotch />}
 
 
 

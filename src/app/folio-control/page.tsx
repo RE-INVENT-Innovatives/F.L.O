@@ -18,7 +18,7 @@ import { Education, Experience } from '@/services/profile.service';
 
 import dynamic from 'next/dynamic';
 import { useWindowSize } from '@/hooks/useWindowSize';
-import { Notch, NotchItem } from '@/components/ui/notch';
+import { useNotchTabStore } from '@/store/notchTabStore';
 import { RepoCard } from '@/components/features/dashboard/RepoCard';
 import { SkillBadge } from '@/components/features/dashboard/SkillBadge';
 import { Modal } from '@/components/ui/Modal';
@@ -67,7 +67,10 @@ export default function FolioControlPage() {
     addNotification,
   } = useStore();
 
-  const [activeTab, setActiveTab] = useState<FolioTab>('repos');
+  const { activeTab, setActiveTab } = useNotchTabStore();
+  const _activeTab = (activeTab as FolioTab) || 'repos';
+  // Initialize default tab for this page
+  React.useEffect(() => { if (!activeTab || !['repos','skills','professional','testimonials','assets'].includes(activeTab)) setActiveTab('repos'); }, []);
   const [newSkill, setNewSkill] = useState('');
   const [sortBy, setSortBy] = useState<'stars' | 'name' | 'updated-desc'>('stars');
   const [filterLang, setFilterLang] = useState<string>('All');
@@ -238,10 +241,10 @@ export default function FolioControlPage() {
             onClick={() => setActiveTab(tab.id)}
             className={cn(
               'relative flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium transition-all whitespace-nowrap',
-              activeTab === tab.id ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+              _activeTab === tab.id ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
             )}
           >
-            {activeTab === tab.id && (
+            {_activeTab === tab.id && (
               <motion.div
                 layoutId="folioTab"
                 className="absolute inset-0 bg-zinc-800 rounded-lg"
@@ -257,14 +260,14 @@ export default function FolioControlPage() {
       {/* ── Tab Content ── */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={activeTab}
+          key={_activeTab}
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.2 }}
         >
           {/* ─ Repos ─ */}
-          {activeTab === 'repos' && (
+          {_activeTab === 'repos' && (
             <div className="space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-baseline gap-3">
@@ -333,7 +336,7 @@ export default function FolioControlPage() {
           )}
 
           {/* ─ Skills ─ */}
-          {activeTab === 'skills' && (
+          {_activeTab === 'skills' && (
             <div className="max-w-2xl space-y-5">
               <form onSubmit={handleAddSkill} className="relative">
                 <input
@@ -371,7 +374,7 @@ export default function FolioControlPage() {
           )}
 
           {/* ─ Professional ─ */}
-          {activeTab === 'professional' && (
+          {_activeTab === 'professional' && (
             <div className="space-y-12 max-w-4xl">
               {/* Experience */}
               <section>
@@ -506,7 +509,7 @@ export default function FolioControlPage() {
           )}
 
           {/* ─ Testimonials ─ */}
-          {activeTab === 'testimonials' && (
+          {_activeTab === 'testimonials' && (
             <div className="space-y-5 max-w-5xl">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -632,7 +635,7 @@ export default function FolioControlPage() {
           )}
 
           {/* ─ Assets ─ */}
-          {activeTab === 'assets' && (
+          {_activeTab === 'assets' && (
             <div className="space-y-5 max-w-5xl">
               <div className="flex items-center justify-between">
                 <p className="text-[13px] text-zinc-400">
@@ -886,21 +889,6 @@ export default function FolioControlPage() {
           />
         )}
       </AnimatePresence>
-      {/* Notch Navigation (Mobile Only) */}
-      {isMobile && (
-        <Notch 
-          items={[
-            {
-              id: "tabs",
-              label: "Menu",
-              value: activeTab,
-              onChange: (id) => setActiveTab(id as any),
-              options: TABS.map(t => ({ id: t.id, label: t.label }))
-            }
-          ]}
-          position="bottom"
-        />
-      )}
     </div>
   );
 }
