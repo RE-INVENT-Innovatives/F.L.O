@@ -264,7 +264,9 @@ export const Notch = ({
               ) : null}
               <span className="text-neutral-100">{item.label}</span>
               {(item.showValue ?? showSelectedValue) && selected ? (
-                <span className="text-neutral-400">{selected.label}</span>
+                <span className="font-semibold" style={{ color: accentColor }}>
+                  {selected.label}
+                </span>
               ) : null}
             </button>
             {showDividers && !isLast ? <NotchDivider /> : null}
@@ -297,7 +299,8 @@ export const Notch = ({
         animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         transition={SHELL_SPRING}
         className={cn(
-          "pointer-events-auto flex w-fit flex-col overflow-hidden rounded-xl border border-white/10 bg-neutral-950/95 shadow-[0_12px_40px_-8px_rgba(0,0,0,0.55)] ring-1 ring-neutral-800 backdrop-blur-2xl ring-inset",
+          "pointer-events-auto flex w-fit flex-col overflow-hidden rounded-xl bg-neutral-950/90 shadow-[0_0_20px_rgba(99,102,241,0.15),0_12px_40px_-8px_rgba(0,0,0,0.7)] backdrop-blur-2xl relative",
+          "before:absolute before:inset-0 before:p-[1px] before:rounded-xl before:bg-gradient-to-r before:from-indigo-500/40 before:via-violet-500/20 before:to-indigo-500/40 before:content-[''] before:[mask-image:linear-gradient(#fff_0_0)_content-box,linear-gradient(#fff_0_0)] before:[mask-composite:xor] before:pointer-events-none",
           className,
         )}
       >

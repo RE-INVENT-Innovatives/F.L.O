@@ -178,7 +178,7 @@ export default function FolioControlPage() {
   return (
     <div className="space-y-8 pb-20">
       {/* ── Page header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 pb-6 border-b border-white/5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between pt-2 pb-6 border-b border-white/5">
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-xl font-semibold tracking-tight text-white">Folio Control</h1>
@@ -194,40 +194,42 @@ export default function FolioControlPage() {
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        {/* Action buttons — scrollable row on mobile, wrapped on desktop */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5 sm:pb-0 sm:flex-wrap">
           <button
             onClick={() => setShowProfileModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-white/8 text-zinc-300 rounded-xl text-[13px] font-medium hover:bg-zinc-800 transition-all"
+            className="flex items-center gap-1.5 shrink-0 px-3 py-2 sm:px-4 bg-zinc-900 border border-white/8 text-zinc-300 rounded-xl text-[12px] sm:text-[13px] font-medium hover:bg-zinc-800 active:scale-95 transition-all touch-manipulation"
           >
-            <User className="w-3.5 h-3.5" />
-            Edit Profile
+            <User className="w-3.5 h-3.5 shrink-0" />
+            <span className="hidden xs:inline sm:inline">Edit Profile</span>
+            <span className="xs:hidden sm:hidden">Profile</span>
           </button>
 
           <button
             onClick={handleSyncGithub}
             disabled={isSyncing}
-            className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-white/8 text-zinc-300 rounded-xl text-[13px] font-medium hover:bg-zinc-800 transition-all disabled:opacity-40"
+            className="flex items-center gap-1.5 shrink-0 px-3 py-2 sm:px-4 bg-zinc-900 border border-white/8 text-zinc-300 rounded-xl text-[12px] sm:text-[13px] font-medium hover:bg-zinc-800 active:scale-95 transition-all disabled:opacity-40 touch-manipulation"
           >
             {isSyncing ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
             ) : (
-              <Github className="w-3.5 h-3.5" />
+              <Github className="w-3.5 h-3.5 shrink-0" />
             )}
-            {isSyncing ? 'Syncing...' : 'Sync GitHub'}
+            <span>{isSyncing ? 'Syncing...' : 'Sync GitHub'}</span>
           </button>
 
           <label
             className={cn(
-              'flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-[13px] font-medium transition-all cursor-pointer shadow-sm shadow-indigo-500/20',
+              'flex items-center gap-1.5 shrink-0 px-3 py-2 sm:px-4 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white rounded-xl text-[12px] sm:text-[13px] font-medium transition-all cursor-pointer shadow-sm shadow-indigo-500/20 touch-manipulation',
               isImporting && 'opacity-50 pointer-events-none'
             )}
           >
             {isImporting ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
             ) : (
-              <FileUp className="w-3.5 h-3.5" />
+              <FileUp className="w-3.5 h-3.5 shrink-0" />
             )}
-            {isImporting ? 'Processing...' : 'Import Resume'}
+            <span>{isImporting ? 'Processing...' : 'Import Resume'}</span>
             <input type="file" className="hidden" accept=".pdf,.doc,.docx" onChange={handleResumeUpload} />
           </label>
         </div>
