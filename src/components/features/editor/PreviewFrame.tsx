@@ -130,7 +130,9 @@ export function PreviewFrame({
           <div className="w-full h-full bg-white shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-xl overflow-hidden">
             <PreviewIframe>
               <PortfolioDataProvider isEditable={true}>
-                <PreviewComponent />
+                <React.Suspense fallback={<div className="w-full h-full flex items-center justify-center bg-white"><div className="w-8 h-8 border-2 border-zinc-200 border-t-zinc-800 rounded-full animate-spin" /></div>}>
+                  <PreviewComponent />
+                </React.Suspense>
               </PortfolioDataProvider>
             </PreviewIframe>
           </div>
@@ -148,7 +150,9 @@ export function PreviewFrame({
             <div className="w-full h-full rounded-[2.3rem] overflow-hidden bg-white">
               <PreviewIframe>
                 <PortfolioDataProvider isEditable={true}>
-                  <PreviewComponent />
+                  <React.Suspense fallback={<div className="w-full h-full flex items-center justify-center bg-white"><div className="w-8 h-8 border-2 border-zinc-200 border-t-zinc-800 rounded-full animate-spin" /></div>}>
+                    <PreviewComponent />
+                  </React.Suspense>
                 </PortfolioDataProvider>
               </PreviewIframe>
             </div>

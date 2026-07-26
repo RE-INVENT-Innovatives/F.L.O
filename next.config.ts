@@ -5,8 +5,15 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   typescript: {
-    ignoreBuildErrors: false, // We fixed the TS error, so we can keep this false or true
+    ignoreBuildErrors: false,
   },
+  experimental: {
+    // Tells Next.js to pre-optimize these large packages for faster dev server startup
+    // and smaller production bundles via better tree-shaking
+    optimizePackageImports: ['lucide-react', 'motion'],
+  },
+  // Compress responses in production
+  compress: true,
 };
 
 export default nextConfig;

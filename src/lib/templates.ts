@@ -1,11 +1,15 @@
-import { MinimalTemplate } from '@/components/templates/minimal/MinimalTemplate';
-import { DeveloperTemplate } from '@/components/templates/developer/DeveloperTemplate';
-import { CreativeTemplate } from '@/components/templates/creative/CreativeTemplate';
-import { DominicTemplate } from '@/components/templates/premium/DominicTemplate';
-import { VanshikaTemplate } from '@/components/templates/minimal/VanshikaTemplate';
-import { FoliobloxTemplate } from '@/components/templates/vibrant/FoliobloxTemplate';
-import { FuturisticTemplate } from '@/components/templates/abstract/FuturisticTemplate';
+import React from 'react';
 import { LayoutTemplate, Code, Palette, Rocket, Zap, Crown, Shield } from 'lucide-react';
+
+// Lazy-load template components — each only downloads when first rendered
+const MinimalTemplate = React.lazy(() => import('@/components/templates/minimal/MinimalTemplate').then(m => ({ default: m.MinimalTemplate })));
+const DeveloperTemplate = React.lazy(() => import('@/components/templates/developer/DeveloperTemplate').then(m => ({ default: m.DeveloperTemplate })));
+const CreativeTemplate = React.lazy(() => import('@/components/templates/creative/CreativeTemplate').then(m => ({ default: m.CreativeTemplate })));
+const DominicTemplate = React.lazy(() => import('@/components/templates/premium/DominicTemplate').then(m => ({ default: m.DominicTemplate })));
+const VanshikaTemplate = React.lazy(() => import('@/components/templates/minimal/VanshikaTemplate').then(m => ({ default: m.VanshikaTemplate })));
+const FoliobloxTemplate = React.lazy(() => import('@/components/templates/vibrant/FoliobloxTemplate').then(m => ({ default: m.FoliobloxTemplate })));
+const FuturisticTemplate = React.lazy(() => import('@/components/templates/abstract/FuturisticTemplate').then(m => ({ default: m.FuturisticTemplate })));
+
 
 export const TEMPLATES = [
   { 

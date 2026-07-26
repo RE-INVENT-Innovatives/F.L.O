@@ -101,7 +101,9 @@ export default function PublicProfilePage() {
           </button>
         </div>
       )}
-      <TemplateComponent />
+      <React.Suspense fallback={<div className="min-h-screen bg-zinc-950 flex items-center justify-center"><div className="w-10 h-10 border-2 border-zinc-700 border-t-indigo-500 rounded-full animate-spin" /></div>}>
+        <TemplateComponent />
+      </React.Suspense>
     </div>
   );
 }

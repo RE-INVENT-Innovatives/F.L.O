@@ -237,55 +237,41 @@ export const useStore = create<AppState>()(
       },
 
       fetchInitialData: async () => {
-        // Use a dedicated flag rather than githubUser to prevent duplicate fetches
         const { hasFetchedInitialData } = get();
         if (hasFetchedInitialData) return;
 
         try {
-          // GET /portfolio returns the most complete state now including custom fields
-          const portfolio = await portfolioService.getSettings();
+          // Run portfolio settings AND GitHub profile fetch in PARALLEL
+          const [portfolioResult, githubResult] = await Promise.allSettled([
+            portfolioService.getSettings(),
+            githubService.getProfile(1, 10),
+          ]);
+
+          const portfolio = portfolioResult.status === 'fulfilled' ? portfolioResult.value : null;
           if (!portfolio) throw new Error('Portfolio settings not found');
 
           let ghUserToSave = null;
           let ghReposToSave: any[] = [];
           let ghPagination = null;
 
-          try {
-            const githubProfile = await githubService.getProfile(1, 10);
-            if (githubProfile) {
-              const { user, repos: ghRepos, pagination } = githubProfile;
-              ghUserToSave = {
-                 login: user.login,
-                 id: user.id,
-                 name: user.name,
-                 bio: user.bio,
-                 avatar_url: user.avatar_url,
-                 html_url: user.html_url,
-                 company: user.company,
-                 blog: user.blog,
-                 location: user.location,
-                 email: user.email,
-                 public_repos: user.public_repos,
-                 followers: user.followers,
-                 following: user.following,
-                 twitter_username: user.twitter_username,
-              };
-              ghReposToSave = (ghRepos || []).map((r: any) => ({
-                id: r.id,
-                name: r.name,
-                full_name: r.full_name,
-                html_url: r.html_url,
-                description: r.description,
-                language: r.language,
-                stargazers_count: r.stargazers_count || 0,
-                homepage: r.homepage,
-                updated_at: r.updated_at || new Date().toISOString(),
-              }));
-              ghPagination = pagination || null;
-            }
-          } catch (ghErr: any) {
-            // Usually a 404 if GitHub is not connected yet. We swallow the error to avoid the Next.js Dev Overlay
-            console.warn('[Store] GitHub profile not found or not connected yet. Proceeding with basic portfolio data.');
+          if (githubResult.status === 'fulfilled' && githubResult.value) {
+            const { user, repos: ghRepos, pagination } = githubResult.value;
+            ghUserToSave = {
+              login: user.login, id: user.id, name: user.name, bio: user.bio,
+              avatar_url: user.avatar_url, html_url: user.html_url, company: user.company,
+              blog: user.blog, location: user.location, email: user.email,
+              public_repos: user.public_repos, followers: user.followers,
+              following: user.following, twitter_username: user.twitter_username,
+            };
+            ghReposToSave = (ghRepos || []).map((r: any) => ({
+              id: r.id, name: r.name, full_name: r.full_name, html_url: r.html_url,
+              description: r.description, language: r.language,
+              stargazers_count: r.stargazers_count || 0, homepage: r.homepage,
+              updated_at: r.updated_at || new Date().toISOString(),
+            }));
+            ghPagination = pagination || null;
+          } else {
+            console.warn('[Store] GitHub profile not found or not connected yet.');
           }
 
           set({
@@ -299,8 +285,8 @@ export const useStore = create<AppState>()(
               twitter: portfolio.customTwitter || portfolio.twitter || ghUserToSave?.twitter_username || '',
               linkedin: portfolio.customLinkedin || portfolio.linkedin || '',
             },
-            selectedRepoIds: (portfolio.selectedRepoIds && portfolio.selectedRepoIds.length > 0) 
-              ? portfolio.selectedRepoIds 
+            selectedRepoIds: (portfolio.selectedRepoIds && portfolio.selectedRepoIds.length > 0)
+              ? portfolio.selectedRepoIds
               : ghReposToSave.slice(0, 6).map((r: any) => r.id),
             skills: portfolio.skills || [],
             selectedTemplate: portfolio.selectedTemplate || 'minimal',
@@ -312,16 +298,15 @@ export const useStore = create<AppState>()(
             hasFetchedInitialData: true,
           });
 
-          // Also fetch full profile (education/experience)
-          try {
-            await get().fetchProfile();
-          } catch (profErr) {
-            console.warn('[Store] Failed to fetch professional profile:', profErr);
-          }
+          // Fire-and-forget: fetch education/experience without blocking
+          get().fetchProfile().catch(err =>
+            console.warn('[Store] Failed to fetch professional profile:', err)
+          );
         } catch (error: any) {
           console.warn('[Store] Failed to fetch initial data:', error.message || error);
         }
       },
+
 
       fetchMoreRepos: async (page: number) => {
         try {

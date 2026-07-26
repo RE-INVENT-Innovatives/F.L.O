@@ -98,10 +98,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <AnimatePresence mode="wait">
           <motion.div
             key={pathname}
-            initial={isEditingBlog ? { opacity: 0 } : { opacity: 0, y: 20, filter: 'blur(10px)' }}
-            animate={isEditingBlog ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
-            exit={isEditingBlog ? { opacity: 0 } : { opacity: 0, y: -20, filter: 'blur(10px)' }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            initial={isEditingBlog ? { opacity: 0 } : { opacity: 0, y: 12 }}
+            animate={isEditingBlog ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            exit={isEditingBlog ? { opacity: 0 } : { opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="w-full h-full"
           >
             {children}
