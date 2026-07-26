@@ -21,6 +21,8 @@ interface PortfolioData {
   testimonials: Testimonial[];
   approvedTestimonials: Testimonial[];
   assets: Asset[];
+  updateCustomData: (data: Partial<AppState['customData']>) => void;
+  isEditable: boolean;
 }
 
 const PortfolioDataContext = createContext<PortfolioData | null>(null);
@@ -45,10 +47,12 @@ export function usePortfolioData() {
     testimonials: store.testimonials,
     approvedTestimonials: store.testimonials.filter(t => t.isApproved),
     assets: store.assets,
+    updateCustomData: store.updateCustomData,
+    isEditable: false, // Default fallback
   };
 }
 
-export function PortfolioDataProvider({ children, isPlaceholder = false }: { children: ReactNode, isPlaceholder?: boolean }) {
+export function PortfolioDataProvider({ children, isPlaceholder = false, isEditable = false }: { children: ReactNode, isPlaceholder?: boolean, isEditable?: boolean }) {
   const store = useStore();
 
   const data: PortfolioData = isPlaceholder ? {
@@ -62,6 +66,8 @@ export function PortfolioDataProvider({ children, isPlaceholder = false }: { chi
     testimonials: MOCK_TESTIMONIALS,
     approvedTestimonials: MOCK_TESTIMONIALS,
     assets: MOCK_ASSETS,
+    updateCustomData: () => {}, // No-op for placeholder
+    isEditable: false,
   } : {
     githubUser: store.githubUser,
     customData: store.customData,
@@ -73,6 +79,8 @@ export function PortfolioDataProvider({ children, isPlaceholder = false }: { chi
     testimonials: store.testimonials,
     approvedTestimonials: store.testimonials.filter(t => t.isApproved),
     assets: store.assets,
+    updateCustomData: store.updateCustomData,
+    isEditable,
   };
 
   return (

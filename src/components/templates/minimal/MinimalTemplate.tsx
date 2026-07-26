@@ -11,9 +11,10 @@ import { StackIcon } from '@/components/ui/StackIcon';
 import { motion } from 'motion/react';
 
 import { usePortfolioData } from '@/context/PortfolioDataContext';
+import { EditableText } from '@/components/ui/EditableText';
 
 export function MinimalTemplate() {
-  const { githubUser, customData, repos, selectedRepos, skills, education, experiences, approvedTestimonials, assets } = usePortfolioData();
+  const { githubUser, customData, updateCustomData, repos, selectedRepos, skills, education, experiences, approvedTestimonials, assets } = usePortfolioData();
 
   return (
     <div className="min-h-full bg-white text-zinc-900 font-sans p-6 sm:p-12 md:p-24 lg:p-32 selection:bg-black selection:text-white max-w-7xl mx-auto border-x border-zinc-100/50 shadow-2xl relative">
@@ -21,9 +22,15 @@ export function MinimalTemplate() {
       <div className="absolute left-8 md:left-24 lg:left-32 top-0 bottom-0 w-[1px] bg-zinc-100 hidden sm:block" />
 
       <header className="mb-32 relative z-10 transition-all duration-700">
-        <motion.p initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-sm font-bold tracking-[0.3em] uppercase text-zinc-400 mb-12">Foundational Profile</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-bold tracking-tighter mb-10 leading-[0.85]">{customData.name}</motion.h1>
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-xl sm:text-2xl md:text-3xl text-zinc-500 max-w-3xl leading-relaxed font-light">{customData.bio}</motion.p>
+        <motion.p initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-sm font-bold tracking-[0.3em] uppercase text-zinc-400 mb-12">
+          <EditableText value={customData.role || 'Foundational Profile'} onChange={(val) => updateCustomData({ role: val })} />
+        </motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-bold tracking-tighter mb-10 leading-[0.85]">
+          <EditableText value={customData.name} onChange={(val) => updateCustomData({ name: val })} />
+        </motion.h1>
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-xl sm:text-2xl md:text-3xl text-zinc-500 max-w-3xl leading-relaxed font-light">
+          <EditableText value={customData.bio} onChange={(val) => updateCustomData({ bio: val })} multiline={true} />
+        </motion.p>
         
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="flex flex-wrap gap-8 mt-12 text-sm font-bold uppercase tracking-widest text-zinc-400">
           {customData.email && (

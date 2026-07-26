@@ -94,15 +94,9 @@ export default function PreviewEditorPage() {
             setActiveTab={setActiveTab as any}
             isCollapsed={isEditorCollapsed}
             isFullscreen={isFullscreen}
-            templateSearch={templateSearch}
-            setTemplateSearch={setTemplateSearch}
             templates={[...templates]}
             activeTemplateId={activeTemplateId}
             onTemplateSelect={handleTemplateSelect}
-            customData={customData}
-            updateCustomData={updateCustomData}
-            chatInput={chatInput}
-            setChatInput={setChatInput}
           />
         )}
 
@@ -128,6 +122,10 @@ export default function PreviewEditorPage() {
           <BrowserChrome 
             isFullscreen={isFullscreen}
             setIsFullscreen={setIsFullscreen}
+            deviceMode={deviceMode}
+            setDeviceMode={setDeviceMode}
+            onExport={() => setShowExportModal(true)}
+            githubUser={githubUser}
           />
           
           <PreviewFrame 
@@ -135,8 +133,6 @@ export default function PreviewEditorPage() {
             setDeviceMode={setDeviceMode}
             selectedTemplate={selectedTemplate}
             customData={customData}
-            onExport={() => setShowExportModal(true)}
-            githubUser={githubUser}
           />
         </div>
         )}
