@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Mail, Star, Trash2, Search, Loader2, RefreshCw, MailOpen } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Mail, Star, Trash2, Search, Loader2, RefreshCw, MailOpen, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { inboxService, InboxMessage } from '@/services/inbox.service';
 import { useStore } from '@/store/useStore';
@@ -29,6 +30,7 @@ function MessageAvatar({ name }: { name: string }) {
 }
 
 export default function InboxPage() {
+  const router = useRouter();
   const { addNotification } = useStore();
 
   const [messages, setMessages] = useState<InboxMessage[]>([]);
@@ -128,17 +130,26 @@ export default function InboxPage() {
   };
 
   return (
-    <div className="flex flex-col h-full space-y-5">
+    <div className="flex flex-col h-full space-y-4 sm:space-y-5 px-2 sm:px-4 py-4 md:py-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between pt-2">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight text-white">Inbox</h1>
-          <p className="text-xs text-zinc-500 mt-0.5">
-            {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}
-          </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => router.back()}
+            className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white hover:bg-white/10 transition-all shadow-md group shrink-0"
+            title="Go Back"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+          </button>
+          <div>
+            <h1 className="text-xl font-semibold tracking-tight text-white">Notifications</h1>
+            <p className="text-xs text-zinc-500 mt-0.5">
+              {unreadCount > 0 ? `${unreadCount} unread messages` : 'All caught up'}
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
           {/* Filter Tabs */}
           <div className="flex items-center gap-0.5 bg-zinc-900 border border-white/6 rounded-lg p-0.5">
             {(['all', 'unread', 'starred'] as FilterType[]).map((f) => (
@@ -146,7 +157,7 @@ export default function InboxPage() {
                 key={f}
                 onClick={() => setFilter(f)}
                 className={cn(
-                  'px-3.5 py-1.5 rounded-md text-xs font-medium capitalize transition-all duration-150',
+                  'px-3 py-1.5 rounded-md text-xs font-medium capitalize transition-all duration-150',
                   filter === f
                     ? 'bg-zinc-800 text-white shadow-sm'
                     : 'text-zinc-500 hover:text-zinc-300'
@@ -165,7 +176,7 @@ export default function InboxPage() {
           <button
             onClick={() => fetchMessages(true)}
             disabled={isRefreshing}
-            className="p-2 rounded-lg text-zinc-500 hover:text-white hover:bg-white/5 transition-colors disabled:opacity-40"
+            className="p-2 rounded-lg text-zinc-500 hover:text-white hover:bg-white/5 transition-colors disabled:opacity-40 shrink-0"
             title="Refresh"
           >
             <RefreshCw className={cn('w-3.5 h-3.5', isRefreshing && 'animate-spin')} />
@@ -173,10 +184,14 @@ export default function InboxPage() {
         </div>
       </div>
 
-      {/* Two-pane layout */}
-      <div className="flex gap-4 flex-1" style={{ minHeight: '72vh' }}>
-        {/* Left: Message List */}
-        <div className="w-[340px] shrink-0 flex flex-col bg-zinc-900/40 border border-white/6 rounded-2xl overflow-hidden">
+      {/* Two-pane layout with responsive mobile toggle */}
+      <div className="flex gap-4 flex-1 min-h-[65vh] md:min-h-[72vh]">
+        
+        {/* Left: Message List (Hidden on mobile if a message is selected) */}
+        <div className={cn(
+          "w-full md:w-[340px] shrink-0 flex flex-col bg-zinc-900/40 border border-white/6 rounded-2xl overflow-hidden transition-all",
+          selectedId !== null ? "hidden md:flex" : "flex"
+        )}>
           {/* Search */}
           <div className="p-3 border-b border-white/5">
             <div className="relative">
@@ -184,7 +199,7 @@ export default function InboxPage() {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search..."
+                placeholder="Search notifications..."
                 className="w-full pl-8 pr-3 py-2 bg-zinc-950/60 border border-white/5 rounded-lg text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-white/10 transition-colors"
               />
             </div>
@@ -193,13 +208,13 @@ export default function InboxPage() {
           {/* List */}
           <div className="flex-1 overflow-y-auto custom-scrollbar divide-y divide-white/[0.04]">
             {isLoading ? (
-              <div className="flex items-center justify-center h-full">
-                <Loader2 className="w-4 h-4 animate-spin text-zinc-600" />
+              <div className="flex items-center justify-center h-full py-12">
+                <Loader2 className="w-5 h-5 animate-spin text-zinc-500" />
               </div>
             ) : filteredMessages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full gap-3 text-zinc-600 py-12">
                 <Mail className="w-6 h-6 opacity-30" />
-                <p className="text-xs">No messages found</p>
+                <p className="text-xs">No notifications found</p>
               </div>
             ) : (
               filteredMessages.map((msg) => (
@@ -215,7 +230,7 @@ export default function InboxPage() {
                 >
                   {/* Unread indicator */}
                   {!msg.isRead && (
-                    <span className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-indigo-500" />
+                    <span className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-indigo-500" />
                   )}
 
                   <div className="flex items-start gap-3">
@@ -239,7 +254,7 @@ export default function InboxPage() {
                       <p
                         className={cn(
                           'text-[12px] truncate mb-0.5',
-                          !msg.isRead ? 'text-zinc-200' : 'text-zinc-400'
+                          !msg.isRead ? 'text-zinc-200 font-medium' : 'text-zinc-400'
                         )}
                       >
                         {msg.subject}
@@ -255,8 +270,11 @@ export default function InboxPage() {
           </div>
         </div>
 
-        {/* Right: Message Detail */}
-        <div className="flex-1 bg-zinc-900/40 border border-white/6 rounded-2xl overflow-hidden flex flex-col">
+        {/* Right: Message Detail (Hidden on mobile if no message is selected) */}
+        <div className={cn(
+          "flex-1 bg-zinc-900/40 border border-white/6 rounded-2xl overflow-hidden flex flex-col transition-all",
+          selectedId === null ? "hidden md:flex" : "flex"
+        )}>
           <AnimatePresence mode="wait">
             {selectedMessage ? (
               <motion.div
@@ -268,9 +286,17 @@ export default function InboxPage() {
                 className="flex flex-col h-full"
               >
                 {/* Detail Header */}
-                <div className="px-7 py-5 border-b border-white/5">
-                  <div className="flex items-start justify-between gap-4 mb-5">
-                    <h2 className="text-[17px] font-semibold text-white leading-snug">
+                <div className="px-4 sm:px-7 py-4 sm:py-5 border-b border-white/5">
+                  {/* Mobile Back Button */}
+                  <button 
+                    onClick={() => setSelectedId(null)}
+                    className="md:hidden flex items-center gap-1.5 text-xs text-indigo-400 font-bold mb-3 hover:underline"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" /> Back to Notifications
+                  </button>
+
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <h2 className="text-base sm:text-[17px] font-semibold text-white leading-snug">
                       {selectedMessage.subject}
                     </h2>
                     <div className="flex items-center gap-1 shrink-0">
@@ -303,13 +329,13 @@ export default function InboxPage() {
 
                   <div className="flex items-center gap-3">
                     <MessageAvatar name={selectedMessage.name} />
-                    <div>
-                      <p className="text-sm font-medium text-zinc-200">
+                    <div className="min-w-0">
+                      <p className="text-xs sm:text-sm font-medium text-zinc-200 truncate">
                         {selectedMessage.name}
                       </p>
-                      <p className="text-xs text-zinc-500 mt-0.5">
+                      <p className="text-[11px] text-zinc-500 mt-0.5 truncate">
                         {selectedMessage.email}
-                        <span className="mx-2 text-zinc-700">·</span>
+                        <span className="mx-1.5 text-zinc-700">·</span>
                         {new Date(selectedMessage.createdAt).toLocaleString([], {
                           dateStyle: 'medium',
                           timeStyle: 'short',
@@ -320,23 +346,23 @@ export default function InboxPage() {
                 </div>
 
                 {/* Message Body */}
-                <div className="flex-1 overflow-y-auto px-7 py-6 custom-scrollbar">
-                  <p className="text-[14px] text-zinc-300 leading-[1.8] whitespace-pre-line">
+                <div className="flex-1 overflow-y-auto px-4 sm:px-7 py-5 custom-scrollbar">
+                  <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed sm:leading-[1.8] whitespace-pre-line">
                     {selectedMessage.message}
                   </p>
                 </div>
 
                 {/* Footer action */}
-                <div className="px-7 py-4 border-t border-white/5 flex items-center gap-3">
+                <div className="px-4 sm:px-7 py-4 border-t border-white/5 flex items-center gap-3 flex-wrap">
                   <a
                     href={`mailto:${selectedMessage.email}?subject=Re: ${encodeURIComponent(selectedMessage.subject)}`}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-zinc-950 rounded-lg text-[13px] font-semibold hover:bg-zinc-100 transition-colors shadow-sm"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-zinc-950 rounded-lg text-xs sm:text-[13px] font-semibold hover:bg-zinc-100 transition-colors shadow-sm"
                   >
                     Reply
                   </a>
                   <a
                     href={`mailto:${selectedMessage.email}`}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 border border-white/8 text-zinc-400 rounded-lg text-[13px] font-medium hover:text-white hover:border-white/15 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 border border-white/8 text-zinc-400 rounded-lg text-xs sm:text-[13px] font-medium hover:text-white hover:border-white/15 transition-colors truncate max-w-full"
                   >
                     {selectedMessage.email}
                   </a>
@@ -347,10 +373,10 @@ export default function InboxPage() {
                 key="empty"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center h-full gap-4 text-zinc-700"
+                className="flex flex-col items-center justify-center h-full gap-4 text-zinc-700 py-16"
               >
                 <MailOpen className="w-10 h-10 opacity-30" />
-                <p className="text-sm font-medium">Select a message to read</p>
+                <p className="text-sm font-medium">Select a notification to read</p>
               </motion.div>
             )}
           </AnimatePresence>

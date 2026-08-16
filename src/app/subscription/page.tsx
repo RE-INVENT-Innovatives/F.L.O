@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Check, CreditCard, Sparkles, ShieldCheck, Zap, ArrowRight, History } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Check, CreditCard, Sparkles, ShieldCheck, Zap, ArrowRight, History, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const PLANS = [
@@ -58,13 +59,26 @@ const PLANS = [
 ];
 
 export default function SubscriptionPage() {
+  const router = useRouter();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
   return (
-    <div className="min-h-screen pt-24 pb-32 px-6 origin-top" style={{ zoom: 0.75 }}>
+    <div className="min-h-screen pt-16 md:pt-24 pb-32 px-4 sm:px-6 origin-top" style={{ zoom: 0.75 }}>
 
-      <div className="max-w-6xl mx-auto space-y-12">
+      <div className="max-w-6xl mx-auto space-y-8 md:space-y-12">
         
+        {/* Top Back Navigation Bar */}
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => router.back()}
+            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white hover:bg-white/10 transition-all shadow-md group shrink-0"
+            title="Go Back"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+          </button>
+          <span className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">Billing & Subscription</span>
+        </div>
+
         {/* Header */}
         <div className="text-center space-y-4">
           <motion.div

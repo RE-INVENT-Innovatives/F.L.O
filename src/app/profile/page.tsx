@@ -2,21 +2,23 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
+import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/useStore';
-import { User, Mail, MapPin, AlignLeft, Save, Loader2, Sparkles } from 'lucide-react';
+import { User, Mail, MapPin, AlignLeft, Save, Loader2, Sparkles, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
 import { PromptModal } from '@/components/ui/PromptModal';
 
 
 export default function ProfilePage() {
+  const router = useRouter();
   const githubUser = useStore((state) => state.githubUser);
   const customData = useStore((state) => state.customData);
   const updateCustomData = useStore((state) => state.updateCustomData);
   const saveProfile = useStore((state) => state.saveProfile);
-   const [isSaving, setIsSaving] = React.useState(false);
-   const [isEnhancing, setIsEnhancing] = React.useState(false);
-   const [showEnhanceModal, setShowEnhanceModal] = React.useState(false);
-   const { toast } = useToast();
+  const [isSaving, setIsSaving] = React.useState(false);
+  const [isEnhancing, setIsEnhancing] = React.useState(false);
+  const [showEnhanceModal, setShowEnhanceModal] = React.useState(false);
+  const { toast } = useToast();
 
 
   if (!githubUser) return null;
@@ -39,8 +41,20 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-12 max-w-3xl">
-      <header className="border-b border-white/5 pb-8 text-center">
+    <div className="container mx-auto px-4 py-6 md:py-8 space-y-8 max-w-3xl">
+      {/* Top Back Navigation Bar */}
+      <div className="flex items-center gap-3">
+        <button 
+          onClick={() => router.back()}
+          className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white hover:bg-white/10 transition-all shadow-md group shrink-0"
+          title="Go Back"
+        >
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+        </button>
+        <span className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest">Profile Settings</span>
+      </div>
+
+      <header className="border-b border-white/5 pb-8 text-center relative">
         <motion.div 
           className="relative w-32 h-32 mx-auto mb-6"
           initial={{ opacity: 0, scale: 0.8 }}
