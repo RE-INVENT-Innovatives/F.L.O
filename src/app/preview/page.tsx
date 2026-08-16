@@ -241,7 +241,7 @@ export default function PreviewEditorPage() {
   }
 
   return (
-    <div className="w-full h-screen p-2 md:p-4 lg:p-6 pt-24 bg-[#0a0a0a]">
+    <div className="w-full h-screen p-0 sm:p-2 md:p-4 bg-[#0a0a0a]">
       {editorContent}
     </div>
   );

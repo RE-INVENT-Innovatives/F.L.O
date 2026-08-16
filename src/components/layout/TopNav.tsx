@@ -26,7 +26,7 @@ export function TopNav() {
 
   if (!githubUser) return null;
 
-  if (pathname === '/profile' || pathname === '/preview') {
+  if (pathname === '/profile') {
     return null;
   }
 
